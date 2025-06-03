@@ -64,7 +64,6 @@ const downloadLink = async (link, page, index) => {
         reject();
         return;
     }
-    console.log('vai tomando')
     button.click();
     
     //encontrando link de download
@@ -88,7 +87,9 @@ const downloadLink = async (link, page, index) => {
     console.log('href', href);
 
     //baixando video
-    const filePath = `./videos/video${index}.mp4`;
+    const dir = './videos'
+    if(!fs.existsSync(dir)) fs.mkdirSync(dir);
+    const filePath = `${dir}/video${index}.mp4`;
     const file = fs.createWriteStream(filePath);
 
     https.get(href, response => {
@@ -115,17 +116,21 @@ const downloadLink = async (link, page, index) => {
 (async () => {
     console.log('olaaa')
     const browserURL = 'http://localhost:9222'; // Endereço do Chrome no modo debug
-    const browser = await puppeteer.connect({ browserURL });
-    console.log('conectados')
+    const browser = await puppeteer.connect({
+        browserURL
+    });
     //const pages = await browser.pages();
     const page = await browser.newPage();
+
+    console.log('conectados')
+    //const pages = await browser.pages();
 
     const data = fs.readFileSync('links.txt');
     const text = data.toString();
     const lines = text.split('\n');
 
     //await downloadLink(lines[0], page, 0);
-    for(let i = 292; i < lines.length; i+=2){
+    for(let i = 0; i < lines.length; i++){
         try {
             console.log(`baixando o video: ${i}`);
             //await downloadLink(lines[i], page, i);
@@ -133,6 +138,7 @@ const downloadLink = async (link, page, index) => {
         }
         catch(err){
             console.log('deu errado, mas temos que continuar');
+            if(!fs.existsSync('logs.txt')) fs.createWriteStream('logs.txt')
             fs.appendFileSync('logs.txt', `Erro ao baixar o video ${i} \n`);
         }
         

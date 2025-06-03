@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 (async () => {
+  const urls = []
   const browserURL = 'http://localhost:9222'; // Endereço do Chrome no modo debug
   const browser = await puppeteer.connect({ browserURL });
 
@@ -24,8 +25,9 @@ const fs = require('fs');
   fs.writeFileSync('links.txt', '');
 
   for(const link of links) {
+    if(urls.find(item => item == link)) continue; //evita links repetidos
     fs.appendFileSync('links.txt', `${link}\n`);
-    //console.log(link)
+    urls.push(link);
   }
 
   console.log('Fim de papo');

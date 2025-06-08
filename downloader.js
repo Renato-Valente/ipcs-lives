@@ -16,7 +16,10 @@ const downloadLink = async (link, page, index) => {
     return new Promise(async(resolve, reject) => {
     
     try {
-        await page.goto('https://fdown.net/pt/index.php');
+        await page.goto('https://fdown.net/pt/index.php', {
+            waitUntil: 'networkidle2',
+            timeout: 60000,
+        });
         await page.waitForSelector('input[name="URLz"]');
     }
     catch(err){
@@ -129,8 +132,18 @@ const downloadLink = async (link, page, index) => {
     const text = data.toString();
     const lines = text.split('\n');
 
+    console.log('teste:', process.argv);
+    const initialIndex = process.argv[2] ? process.argv[2] : 0;
+
+    if(isNaN(initialIndex)) {
+        console.log('Valor passado incorreto. Entre com um numero');
+        //browser.close();
+        return;
+    }
+    console.log('começando os downloads no video:', initialIndex);
+
     //await downloadLink(lines[0], page, 0);
-    for(let i = 0; i < lines.length; i++){
+    for(let i = initialIndex; i < lines.length; i++){
         try {
             console.log(`baixando o video: ${i}`);
             //await downloadLink(lines[i], page, i);
